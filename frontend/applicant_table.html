@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applicant Table</title>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Show ellipsis for long text */
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  /*navbar styles*/
+  .navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+  }
+
+  .navbar button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+  }
+
+  .navbar button:hover {
+    background-color: #555;
+  }
+
+</style>
+</head>
+<body>
+  <div class="navbar">
+    <button onclick="navigateTo('applicant_aadhar.html')">Applicant Aadhar card</button>
+    <button onclick="navigateTo('applicant_voterid.html')">Applicant Voter ID </button>
+    <button onclick="navigateTo('applicant_sign.html')">Applicant Sign (PDF/JPG)</button>
+    <button onclick="navigateTo('applicant_photo.html')">Applicant Passport photo</button>
+    <button onclick="navigateTo('applicant_driving.html')">Applicant Driving License</button>
+    <button onclick="navigateTo('applicant_pancard.html')">Applicant Pancard</button>
+  </div>
+<h1 style="text-align: center;">Applicant Details </h1>
+ <table id="applicant-table">
+    <thead>
+      <tr>
+        <th>Applicant_Id</th>
+        <th>Name</th>
+        <th>Father name</th>
+        <th>Mother name</th>
+        <th>DOB</th>
+        <th>MOB</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Marital Status</th>
+        <th>Current Address</th>
+        <th>Current_Locality</th>
+        <th>Current_District</th>
+        <th>Current_City</th>
+        <th>Current_State Name</th>
+        <th>Current_Pincode</th>
+        <th>Current_Landmark</th>
+        <th>Current_Distance in Km</th>
+        <th>Current_Address Type</th>
+        <th>Permanent Address</th>
+        <th>Permanent_locality</th>
+        <th>Permanent_District</th>
+        <th>Permanent_City</th>
+        <th>Permanent_State Name</th>
+        <th>Applied Date</th>
+        <th>Permanent_Pincode</th> 
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table body will be generated dynamically -->
+    </tbody>
+  </table>
+
+  <script>
+    // Sample data
+    var finalData = [];
+   
+    function callDefaultApi() {
+      fetch('http://localhost:8080/api/applicantdetails', {
+        method: 'GET', // or 'POST', 'PUT', etc. depending on your API
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data); 
+        finalData = data;
+        populateTable(); // Call the function to populate the table after data is fetched
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+
+    // Function to populate the table with data
+    function populateTable() {
+      var tableBody = document.getElementById('applicant-table').getElementsByTagName('tbody')[0];
+  
+      finalData.forEach(function(applicant) {
+        var newRow = tableBody.insertRow();
+        Object.values(applicant).forEach(function(value) {
+          var newCell = newRow.insertCell();
+          newCell.appendChild(document.createTextNode(value));
+        });
+      });
+
+      // Adjust column widths based on content length
+      adjustColumnWidths();
+
+      // Adjust navbar width based on table width
+      adjustNavbarWidth();
+    }
+
+    // Adjust column widths based on content length
+    function adjustColumnWidths() {
+      var table = document.getElementById('applicant-table');
+      for (var i = 0; i < table.rows[0].cells.length; i++) {
+        var maxCellWidth = 0;
+        for (var j = 0; j < table.rows.length; j++) {
+          var cell = table.rows[j].cells[i];
+          var temp = document.createElement('div');
+          temp.style.overflow = 'hidden';
+          temp.style.whiteSpace = 'nowrap';
+          temp.style.visibility = 'hidden';
+          temp.textContent = cell.textContent;
+          document.body.appendChild(temp);
+          maxCellWidth = Math.max(maxCellWidth, temp.offsetWidth);
+          document.body.removeChild(temp);
+        }
+        table.rows[0].cells[i].style.width = maxCellWidth + 'px';
+      }
+    }
+
+    // Adjust navbar width based on table width
+    function adjustNavbarWidth() {
+      var table = document.getElementById('applicant-table');
+      var navbar = document.querySelector('.navbar');
+      navbar.style.width = table.offsetWidth + 'px';
+    }
+
+    // Call the adjustColumnWidths and adjustNavbarWidth functions after the page loads and on window resize
+    window.addEventListener('load', adjustColumnWidths);
+    window.addEventListener('resize', function() {
+      adjustColumnWidths();
+      adjustNavbarWidth();
+    });
+
+    window.onload = function() {
+      callDefaultApi();
+    };
+
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+  </script> 
+  
+</body>
+</html>

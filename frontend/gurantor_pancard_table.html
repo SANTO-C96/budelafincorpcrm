@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guarantor Applicant Pan Card Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .table-container {
+            width: 100%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #2a1414;
+            font-weight: bold;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .image-cell img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .download-btn, .view-btn {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .image-container {
+            position: relative;
+            width: 60%;
+            max-width: 600px;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Gurantor's PanCard Details </h1>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pancard_Id</th>
+                    <th>Pancard_Image</th>
+                    <th>Guarantor_Id</th>
+                </tr>
+            </thead>
+            <tbody id="guarantorTableBody">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+    <div id="imageModal" class="image-modal">
+        <div class="image-container">
+            <button class="close-btn" id="closeBtn">&times;</button>
+            <img id="viewImage" src="" alt="Aadhar Image">
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:8080/api/guarapplicantpancard')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('guarantorTableBody');
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        const downloadUrl = `http://localhost:8080/api/file/${item.pancard}`;
+                        row.innerHTML = `
+                            <td>${item.apli_pancard_id}</td>
+                            <td><button class="view-btn" data-url="${downloadUrl}">View Image</button>
+                                <button class="download-btn" data-url="${downloadUrl}">Download</button></td>
+                            <td>${item.guarantdetails1 ? item.guarantdetails1.id_guar : 'N/A'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    document.querySelectorAll('.download-btn').forEach(button => {
+                        button.addEventListener('click', function(event) {
+                            const url = event.target.getAttribute('data-url');
+                            fetch(url)
+                                .then(response => response.blob())
+                                .then(blob => {
+                                    const downloadUrl = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = downloadUrl;
+                                    a.download = 'image.jpg';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    URL.revokeObjectURL(downloadUrl);
+                                })
+                                .catch(error => console.error('Error fetching the image:', error));
+                        });
+                    });
+
+                    document.querySelectorAll('.view-btn').forEach(button => {
+                        button.addEventListener('click', function(event) {
+                            const url = event.target.getAttribute('data-url');
+                            fetch(url)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.blob();
+                                })
+                                .then(blob => {
+                                    const objectURL = URL.createObjectURL(blob);
+                                    const imageElement = document.getElementById('viewImage');
+                                    imageElement.src = objectURL;
+                                    document.getElementById('imageModal').style.display = 'flex';
+                                })
+                                .catch(error => console.error('Error fetching the image:', error));
+                        });
+                    });
+
+                    // Add event listener to the close button
+                    document.getElementById('closeBtn').addEventListener('click', function() {
+                        document.getElementById('imageModal').style.display = 'none';
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
+</body>
+</html>

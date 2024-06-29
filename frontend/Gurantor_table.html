@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guarantor Table</title>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Show ellipsis for long text */
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  .navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+  }
+  .navbar button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+  }
+  .navbar button:hover {
+    background-color: #555;
+  }
+</style>
+</head>
+<body>
+  <div class="navbar" id="navbar">
+    <button onclick="navigateTo('gurantor_aadhar.html')">Guarantor Aadhar card</button>
+    <button onclick="navigateTo('gurantor_voterid.html')">Guarantor Voter ID </button>
+    <button onclick="navigateTo('gurantor_sign.html')">Guarantor Sign (PDF/JPG)</button>
+    <button onclick="navigateTo('gurantor_photo.html')">Guarantor Passport photo</button>
+    <button onclick="navigateTo('gurantor_drivinglicense.html')">Guarantor Driving License</button>
+    <button onclick="navigateTo('gurantor_pancard_table.html')">Guarantor Pancard</button>
+  </div>
+  <h1 style="text-align: center;">Applicants Guarantor Details </h1>
+
+<table id="Guarantor">
+  <thead>
+    <tr>
+     <th>Guarantor_Id</th>
+      <th>Name</th>
+      <th>Father name</th>
+      <th>Mother name</th>
+      <th>DOB</th>
+      <th>MOB</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th>Marital Status</th>
+      <th>Address </th>
+      <th>Locality</th>
+      <th>District</th>
+      <th>City</th>
+      <th>State Name</th>
+      <th>Landmark</th>
+      <th>Pincode</th>
+      <th>Distance in Km</th>
+      <th>Address Type</th>
+      <th>Applicant_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Table body will be generated dynamically -->
+  </tbody>
+</table>
+<script>
+  // Function to fetch data from API and insert into table
+  async function fetchDataAndPopulateTable() {
+    try {
+      const response = await fetch('http://localhost:8080/api/guarantordetails');
+      const coApplicants = await response.json();
+      const tableBody = document.querySelector('#Guarantor tbody');
+
+      coApplicants.forEach(coApplicant => { 
+        const row = document.createElement('tr');
+
+        // Iterate over each property in coApplicant object
+        for (const key in coApplicant) {
+          const cell = document.createElement('td');
+          if (key === 'applicantDetails1' && coApplicant[key] !== null) {
+            // Extract id_applicant from applicantDetails1
+            cell.textContent = coApplicant[key].id_applicant;
+          } else {
+            // For other properties, directly insert into cell
+            cell.textContent = coApplicant[key];
+          }
+          row.appendChild(cell);
+        }
+
+        tableBody.appendChild(row);
+      });
+
+      // Adjust navbar width based on table width
+      adjustNavbarWidth();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  // Function to navigate to another page
+  function navigateTo(page) {
+    window.location.href = page;
+  }
+
+  // Function to adjust navbar width based on table width
+  function adjustNavbarWidth() {
+    var table = document.getElementById('Guarantor');
+    var navbar = document.getElementById('navbar');
+    navbar.style.width = table.offsetWidth + 'px';
+  }
+
+  // Call the function to populate table on page load
+  window.onload = function() {
+    fetchDataAndPopulateTable();
+  };
+
+  // Adjust navbar width on window resize
+  window.addEventListener('resize', adjustNavbarWidth);
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navbar</title>
+<style>
+  body {
+    margin: 0;
+    background-image: url('https://images.pexels.com/photos/238118/pexels-photo-238118.jpeg?auto=compress&cs=tinysrgb&w=600');
+    background-size: cover;
+    background-position: absolute;
+    background-repeat: no-repeat;
+  }
+
+  .navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 10px 0;
+  }
+  .navbar button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+  }
+  .navbar button:hover {
+    background-color: #555;
+  }
+
+  .centered-container {
+    text-align: left;
+    margin-top: 100px;
+    margin-left: 20px;
+    margin-top: 200px;
+    margin-right: 30%; /* Adjust margin-left as needed */
+    color: #333;
+  }
+
+  .centered-text {
+    font-size: 44px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <button onclick="navigateTo('applicant_table.html')">Applicant</button>
+  <button onclick="navigateTo('co_applicant_table.html')">Co-applicant</button>
+  <button onclick="navigateTo('Gurantor_table.html')">Guarantor</button>
+  <button onclick="navigateTo('finance_table.html')">Finance</button>
+  <button onclick="navigateTo('vehicle_table.html')">Vehicles</button>
+  <button onclick="navigateTo('reference_table.html')">Reference</button>
+</div>
+
+<div class="centered-container">
+  <h1 class="centered-text">Welcome aboard! With our CRM system, you're not just getting software, you're getting a partner dedicated to your success.</h1>
+</div>
+
+<script>
+  function navigateTo(page) {
+    window.location.href = page;
+  }
+</script>
+
+</body>
+</html>

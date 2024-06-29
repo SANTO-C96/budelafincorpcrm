@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guarantor Table</title>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Show ellipsis for long text */
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  .navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+  }
+  .navbar button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+  }
+  .navbar button:hover {
+    background-color: #555;
+  }
+  .container {
+    width: 100%;
+    max-width: 1000px; /* Set max-width to prevent the container from becoming too wide */
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div id="navbar" class="navbar">
+      <button onclick="navigateTo('applicant_table.html')">Applicant</button>
+      <button onclick="navigateTo('co_applicant_table.html')">Co-applicant</button>
+      <button onclick="navigateTo('Gurantor_table.html')">Guarantor</button>
+      <button onclick="navigateTo('finance_table.html')">Finance</button>
+      <button onclick="navigateTo('vehicle_table.html')">Vehicles</button>
+      <button onclick="navigateTo('reference_table.html')">Reference</button>
+    </div>
+
+    <h1 style="text-align: center;">Applicants Finance Details </h1>
+    <table id="finance">
+      <thead>
+        <tr>
+          <th>Finance_Id</th>
+          <th>Loan Amount</th>
+          <th>Disburse Loan Amount</th>
+          <th>Mode of Installment</th>
+          <th>ROI</th>
+          <th>Processing Fees</th>
+          <th>GST</th>
+          <th>Interest Amount</th>
+          <th>Installment Amount</th>
+          <th>Time period</th>
+          <th>No. of Installment</th>
+          <th>Total Returning Amount</th>
+          <th>Installment Day</th>
+          <th>Applicant_Id</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Table body will be generated dynamically -->
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // Function to fetch data from API and insert into table
+    async function fetchDataAndPopulateTable() {
+      try {
+        const response = await fetch('http://localhost:8080/api/financedetails');
+        const coApplicants = await response.json();
+        const tableBody = document.querySelector('#finance tbody');
+
+        coApplicants.forEach(coApplicant => { 
+          const row = document.createElement('tr');
+
+          // Iterate over each property in coApplicant object
+          for (const key in coApplicant) {
+            const cell = document.createElement('td');
+            if (key === 'applicantDetails1' && coApplicant[key] !== null) {
+              // Extract id_applicant from applicantDetails1
+              cell.textContent = coApplicant[key].id_applicant;
+            } else {
+              // For other properties, directly insert into cell
+              cell.textContent = coApplicant[key];
+            }
+            row.appendChild(cell);
+          }
+
+          tableBody.appendChild(row);
+        });
+
+        // Adjust the navbar width after the table is populated
+        adjustNavbarWidth();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    // Function to navigate to another page
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+
+    // Function to adjust the navbar width based on the table width
+    function adjustNavbarWidth() {
+      const table = document.getElementById('finance');
+      const navbar = document.getElementById('navbar');
+      const tableWidth = table.offsetWidth;
+      navbar.style.width = `${tableWidth}px`;
+    }
+
+    // Call the function to populate table on page load
+    window.onload = function() {
+      fetchDataAndPopulateTable();
+    };
+
+    // Adjust the navbar width on window resize
+    window.onresize = function() {
+      adjustNavbarWidth();
+    };
+  </script>
+</body>
+</html>
